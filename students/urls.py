@@ -19,3 +19,5 @@ urlpatterns = [
     path('contact_form', views.contact_form),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# test
