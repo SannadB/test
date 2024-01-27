@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" href="{%static 'index.css' %}">
+<body>
+
+<h1>Hello World!</h1>
+<p>Welcome to my first Django project!</p>
+{% for student in data %}
+    <p>{{ student.firstname }} {{ student.lastname }}</p>
+{% endfor %}
+
+<p id="dataParagraph"></p>
+
+<form action="/submit" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="text" name="firstname" placeholder="First Name">
+    <input type="text" name="lastname" placeholder="Last Name">
+    <input type="file" name="image" accept="image/*" />
+    <input type="submit" value="Submit">
+</form>
+<script src="{% static 'index.js' %}"></script>
+<script>
+    // Assuming your URL is /students_json/
+    const url = '/students_data/';
+    // Fetch data from the server
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Process the data and render it in the <p> tag
+            const dataParagraph = document.getElementById('dataParagraph');
+            dataParagraph.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+</script>
+</body>
+</html>

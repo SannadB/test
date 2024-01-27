@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ item.name }} - Item Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .item-details {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .item-details h2 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .item-details p {
+            color: #666;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ item.name }} - Item Details</h1>
+    <div class="item-details">
+        <h2>{{ item.name }}</h2>
+        <p>{{ item.description }}</p>
+        <p>Price: ${{ item.price }}</p>
+        <!-- Add more fields as needed -->
+
+        <!-- Example: Display an image if your Item model has an 'image' field -->
+        {% if item.image_file %}
+            <img src="/{{ item.image_file }}" alt="{{ item.name }}">
+        {% endif %}
+        {% for rating in item.ratings.all %}
+        <ul>
+            <li>{{ rating.rating }}</li>
+        </ul>
+        {% endfor %}
+    </div>
+
+    <div class="review-form">
+        <label for="review-input">Leave a review:</label>
+        <input type="text" id="review-input" placeholder="Enter your review...">
+        <button id="submit-review" onclick="submitReview('{{item.id}}')">Submit Review</button>
+    </div>
+</body>
+
+<script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+    function submitReview(item_id){
+        review = document.getElementById('review-input').value;
+        fetch('/ratings', {
+            method: 'POST',
+            headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+            body: JSON.stringify({
+                'review': review,
+                'item_id': item_id
+            }),
+        })
+        .then(response => response.json())
+                .then(data => {
+                    if (data.success){
+                        location.reload();
+                    }
+                    else{
+                        alert("Error submitting review");
+                    }
+                })
+    }
+</script>
+</html>
